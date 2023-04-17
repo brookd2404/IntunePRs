@@ -14,9 +14,9 @@
 #As we cannot pass Params to PR's use this first section to define the "Parameters" for the script.
 param(
     [Parameter()]
-    [string]$LogName = "PrinterInventory-Remediate",
+    [string]$LogName = "PR-PrinterInventory",
     [Parameter()]
-    [string]$LogFolder = "Proactive Remediation",
+    [string]$LogFolder = "",
     [parameter()]
     [string]$RegLastSyncLocation = "HKLM:\Software\ProactiveRemediation\Inventory-Printer",
     [parameter()]
@@ -215,7 +215,7 @@ Function Post-LogAnalyticsData($workspaceID, $primaryKey, $body, $logType) {
 #endregion Functions
 #region Main Script
 Start-Log -LogName $LogName -LogFolder $LogFolder
-Write-Log -Message "Proactive Remediation Detection Script Starting" -LogLevel Information
+Write-Log -Message "Proactive Remediation Detection Script Starting" -LogLevel 2
 try {
     $Printers = Get-WMIObject -Class Win32_Printer
     Write-Log -Message "$Printers" -LogLevel 1

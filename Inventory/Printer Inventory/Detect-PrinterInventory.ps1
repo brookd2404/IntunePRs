@@ -14,9 +14,9 @@
 #As we cannot pass Params to PR's use this first section to define the "Parameters" for the script.
 param(
     [Parameter()]
-    [string]$LogName = "PrinterInventory-Detect",
+    [string]$LogName = "PR-PrinterInventory",
     [Parameter()]
-    [string]$LogFolder = "Proactive Remediation",
+    [string]$LogFolder = "",
     [parameter()]
     [string]$RegLastSyncLocation = "HKLM:\Software\ProactiveRemediation\Inventory-Printer"
 )
