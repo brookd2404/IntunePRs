@@ -142,7 +142,7 @@ function Backup-BitLockerKeyToAAD([string]$diskMountPoint, $keyProtectorId) {
             $req.RawContent
         }
     }
-    Remove-Variable -Name LogRegion
+    Remove-Variable -Name LogRegion -Scope Script
 }
 
 function Test-RegistryKeyValue {
@@ -204,7 +204,7 @@ Function Test-BitLockerKeyUploadSuccess {
         Write-Log -Message "Could not find log entry: $($_.Exception.Message)" -LogLevel 2
         Return $false
     }
-    Remove-Variable -Name LogRegion
+    Remove-Variable -Name LogRegion -Scope Script
 }
 
 #endregion
