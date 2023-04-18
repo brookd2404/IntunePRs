@@ -110,7 +110,7 @@ function Write-Log {
 #endregion
 
 #region Main Script
-Start-Log -LogName $LogName -LogFolder $LogFolder
+Start-Log -LogName $LogName
 Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Detection Script Start"
 
 try {
