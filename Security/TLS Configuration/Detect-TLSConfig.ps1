@@ -192,7 +192,7 @@ function Write-Log {
     }
 }
 
-Function Set-RegistryKey {
+Function Get-RegistryKeyCompliance {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $True, HelpMessage = "Please Enter Registry Item Path", Position = 1)]
@@ -200,114 +200,113 @@ Function Set-RegistryKey {
         [Parameter(Mandatory = $True, HelpMessage = "Please Enter Registry Item Name", Position = 2)]
         $Name,
         [Parameter(Mandatory = $True, HelpMessage = "Please Enter Registry Property Item Value", Position = 3)]
-        $Value,
-        [Parameter(Mandatory = $False, HelpMessage = "Please Enter Registry Property Type", Position = 4)]
-        [ValidateSet('String', 'ExpandString', 'Binary', 'DWord', 'QWord', 'MultiString')]
-        $PropertyType = "DWord"
+        $Value
     )
 
     Try {
-        Write-Log -Message "Setting registry [$Path] property [$Name] to [$Value]"
-
-        # If path does not exist, create it
-        If ( (Test-Path $Path) -eq $False ) {
-            Write-Verbose "Creating new registry keys"
-            $null = New-Item -Path $Path -Force
+        Write-Log -Message "Checking registry [$Path] property [$Name] is [$Value]"
+        $RegValue = Get-ItemPropertyValue -Path $Path -Name $Name -ErrorAction SilentlyContinue
+        If ($RegValue -eq $Value) {
+            Write-Log "True: Value set to [$RegValue]"
+            Return $true
         }
-
-        # Update registry value, create it if does not exist (DWORD is default)
-        Write-Log -Message "Working on registry path [$Path]"
-        $itemProperty = Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
-        If ($null -ne $itemProperty) {
-            Write-Log -Message "Setting registry property [$Name] to [$Value]"
-            $itemProperty = Set-ItemProperty -Path $Path -Name $Name -Value $Value
-        }
-        Else {
-            Write-Log -Message "Creating new registry property [$Name] to [$Value]"
-            $itemProperty = New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $PropertyType
+        else {
+            Return $false
         }
     }
     catch {
-        Write-Log -Message "Something went wrong writing registry property"
+        Write-Log -Message "Something went wrong checking registry property"
+        Return $false
     }
 }
 
-function Set-Protocol {
+function Get-Protocol {
     Param (
         $Name,
         $Value
     )
-
+    $ProtocolResults = @()
     If ($Value) {
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'Enabled' -Value 1
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'DisabledByDefault' -Value 0
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'Enabled' -Value 1
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'DisabledByDefault' -Value 0
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'Enabled' -Value 1 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'DisabledByDefault' -Value 0 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'Enabled' -Value 1 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'DisabledByDefault' -Value 0 -ErrorAction SilentlyContinue
     }
     else {
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'Enabled' -Value 0
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'DisabledByDefault' -Value 1
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'Enabled' -Value 0
-        Set-RegistryKey -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'DisabledByDefault' -Value 1
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'Enabled' -Value 0 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Client" -Name 'DisabledByDefault' -Value 1 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'Enabled' -Value 0 -ErrorAction SilentlyContinue
+        $ProtocolResults += Get-RegistryKeyCompliance -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Name\Server" -Name 'DisabledByDefault' -Value 1 -ErrorAction SilentlyContinue
     }
+    Return $ProtocolResults
 }
 
-function Set-Cipher {
+function Get-Cipher {
     Param (
         $Name,
         $Value
     )
-
+    $CipherResults = @()
     If ($Value) {
-        Set-RegistryKey -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers' -Name $Name -value 1
+        $CipherResults += Get-RegistryKeyCompliance -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers' -Name $Name -value 1
     }
     else {
-        Set-RegistryKey -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers' -Name $Name -value 0  
+        $CipherResults += Get-RegistryKeyCompliance -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers' -Name $Name -value 0  
     }
+    Return $CipherResults
 }
 #endregion Functions
 
 #region Main Script
 Start-Log -LogName $LogName
 Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Script Start"
-
+$CheckResults = @()
 try {
-    Write-Log -Message "Configuring Protcols" -Component "Config - Protocols and Ciphers"
+    Write-Log -Message "Checking Protcols" -Component "Config - Protocols and Ciphers"
     ForEach ($Protocol in $Protocols.PSObject.Properties) {
-        Write-Log -Message "Configuring [$($Protocol.Name)] to [$($Protocol.Value)]"
-        Set-Protocol -Name $Protocol.Name -Value $Protocol.Value
+        Write-Log -Message "Checking [$($Protocol.Name)] is [$($Protocol.Value)]"
+        $CheckResults += Get-Protocol -Name $Protocol.Name -Value $Protocol.Value
     }
     
-    Write-Log -Message "Configuring Ciphers" -Component "Config - Protocols and Ciphers"
+    Write-Log -Message "Checking Ciphers" -Component "Config - Protocols and Ciphers"
     ForEach ($Cipher in $Chipers.PSObject.Properties) {
         Write-Log -Message "Configuring [$($Cipher.Name)] to [$($Cipher.Value)]" -Component "Config - Protocols and Ciphers"
-        Set-Cipher -Name $Cipher.Name -Value $Cipher.Value
+        $CheckResults += Get-Cipher -Name $Cipher.Name -Value $Cipher.Value
     }
 
     # Update Windows and WinHTTP
-    Write-Log -Message "Updating Windows and WinHTTP" -Component "Config - Windows and HTTP"
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp\' -Name DefaultSecureProtocols -Value '0xAA0'
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp\' -Name DefaultSecureProtocols -Value '0xAA0'
+    Write-Log -Message "Checking Windows and WinHTTP" -Component "Config - Windows and HTTP"
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp\' -Name DefaultSecureProtocols -Value '0xAA0'
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp\' -Name DefaultSecureProtocols -Value '0xAA0'
 
     # .NET Framework Config
-    Write-Log -Message "Updating .NET Config" -Component "Config - .NET"
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name SystemDefaultTlsVersions -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name SchUseStrongCrypto -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name SystemDefaultTlsVersions -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name SchUseStrongCrypto-Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name SystemDefaultTlsVersions -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name SchUseStrongCrypto -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name SystemDefaultTlsVersions -Value 1
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name SchUseStrongCrypto -Value 1
+    Write-Log -Message "Checking .NET Config" -Component "Config - .NET"
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name SystemDefaultTlsVersions -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727' -Name SchUseStrongCrypto -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name SystemDefaultTlsVersions -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319' -Name SchUseStrongCrypto-Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name SystemDefaultTlsVersions -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727' -Name SchUseStrongCrypto -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name SystemDefaultTlsVersions -Value 1
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319' -Name SchUseStrongCrypto -Value 1
 
     # Cipher Ordering
     Write-Log -Message "Checking Cipher Ordering" -Component "Config - Cipher Order"
-    Set-RegistryKey -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002' -Name Functions -Value 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CCM,TLS_ECDHE_ECDSA_WITH_AES_128_CCM,TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8,TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_CCM,TLS_DHE_RSA_WITH_AES_128_CCM' -PropertyType String
-    Write-Log -Message "TLS Configuration Complete" -Component "Main Script"
-    Exit 0
+    $CheckResults += Get-RegistryKeyCompliance -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002' -Name Functions -Value 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CCM,TLS_ECDHE_ECDSA_WITH_AES_128_CCM,TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8,TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_CCM,TLS_DHE_RSA_WITH_AES_128_CCM' -PropertyType String
+    Write-Log -Message "TLS Checking Complete" -Component "Main Script"
+
+    if ($CheckResults -match $false) {
+        Write-Log -Message "TLS Remediation Required" -LogLevel 3 -Component "Remediation Check"
+        Exit 1
+    }
+    else {
+        Write-Log -Message "TLS Remediation NOT Required" -LogLevel 1 -Component "Remediation Check"
+        Exit 0
+    }
+    
 }
 catch {
-    Write-Log -Message "Something went wrong during config.  Error output:" -LogLevel 3 -Component "Error Handling"
+    Write-Log -Message "Something went wrong during config. Setting to remediate.  Error output:" -LogLevel 3 -Component "Error Handling"
     Write-Log -Message $error[0].ToString() -LogLevel 3 -Component "Error Handling"
     Exit 1
 }
