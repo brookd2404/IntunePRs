@@ -274,7 +274,7 @@ Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Componen
 try {
     Write-Log -Message "Configuring Protcols" -Component "Config - Protocols and Ciphers"
     ForEach ($Protocol in $Protocols.PSObject.Properties) {
-        Write-Log "Configuring [$($Protocol.Name)] to [$($Protocol.Value)]"
+        Write-Log -Message "Configuring [$($Protocol.Name)] to [$($Protocol.Value)]"
         Set-Protcol -Name $Protocol.Name -Value $Protocol.Value
     }
     
