@@ -198,6 +198,7 @@ Write-Log -Message "Windows Update Health Remediation Script Starting" -LogLevel
 $MUSM = New-Object -ComObject "Microsoft.Update.ServiceManager"
 Write-Log -Message "Update Location currently set to: [$(($MUSM.Services| Where-Object IsDefaultAUService -eq $true).Name)]" -Component "Script Startup"
 $ScriptRunOutput.BeforeRemediation.UpdateLocation = ($MUSM.Services | Where-Object IsDefaultAUService -eq $true).Name
+$MUSM = (New-Object -ComObject Microsoft.Update.AutoUpdate)
 $ScriptRunOutput.BeforeRemediation.LastSearchSuccessDate = $MUSM.Results.LastSearchSuccessDate
 $ScriptRunOutput.BeforeRemediation.LastInstallationSuccessDate = $MUSM.Results.LastInstallationSuccessDate
 
@@ -619,6 +620,7 @@ try {
     $MUSM = New-Object -ComObject "Microsoft.Update.ServiceManager"
     Write-Log -Message "Update Location currently set to: [$(($MUSM.Services| Where-Object IsDefaultAUService -eq $true).Name)]"
     $ScriptRunOutput.AfterRemediation.UpdateLocation = ($MUSM.Services | Where-Object IsDefaultAUService -eq $true).Name
+    $MUSM = (New-Object -ComObject Microsoft.Update.AutoUpdate)
     $ScriptRunOutput.AfterRemediation.LastSearchSuccessDate = $MUSM.Results.LastSearchSuccessDate
     $ScriptRunOutput.AfterRemediation.LastInstallationSuccessDate = $MUSM.Results.LastInstallationSuccessDate
 
