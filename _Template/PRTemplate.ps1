@@ -21,6 +21,8 @@
 example:
 param(
     [Parameter()]
+    [string]$LogName = 'PR-MyPRName'
+    [Parameter()]
     [string]$RegPath = "HKLM:\Software\Policies...",
     [Parameter()]
     [string]$RegKey = "MyRegKey",
@@ -123,7 +125,7 @@ function Write-Log {
     #>
     Param (
         [Parameter(Mandatory = $false)]
-        [string]$Component,
+        [string]$Component = $LogRegion,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -157,12 +159,12 @@ function Write-Log {
     $LineFormat = $Message, $TimeGenerated, (Get-Date -Format 'MM-dd-yyyy'), $Component, $LogLevel, $Thread, $Source
     $Line = $Line -f $LineFormat
     Try {
-        Add-Content -Value $Line -Path $ScriptLogFilePath -Encoding 'utf8'
+        $Line | Out-File -FilePath $ScriptLogFilePath -Encoding utf8 -Append
     }
     catch {
         Write-Verbose "Warning: Unable to append to log file - Retrying"
         Try {
-            Add-Content -Value $Line -Path $ScriptLogFilePath -Encoding 'utf8'
+            $Line | Out-File -FilePath $ScriptLogFilePath -Encoding utf8 -Append
         }
         catch {
             Write-Verbose "Error: Failed to append to log file"
@@ -176,8 +178,8 @@ Main script body starts here.
 #>
 
 #region Main Script
-Start-Log -LogName $LogName -LogFolder $LogFolder
-Write-Log -Message "Proactive Remediation Script Starting"
+Start-Log -LogName $LogName
+Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Script Start"
 
 try {
     <# Attempt the following code #>
