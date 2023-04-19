@@ -1,12 +1,14 @@
 #region Variables
-$VerbosePreference = "Continue"
-
-$Company = 'PowerON'
-$LogName = 'PR-WindowsUpdateHealth'
-
-$InstalledMonthsGrace = 3
-$RepairRerunDays = 14
-#endregion
+#$VerbosePreference = "Continue"
+Param (
+    [Parameter(Mandatory = $false)]
+    [string]$Company = 'PowerON',
+    [Parameter(Mandatory = $false)]
+    [string]$LogName = 'PR-WindowsUpdateHealth',
+    $InstalledMonthsGrace = 3,
+    $RepairRerunDays = 14
+)
+#endregion Variables
 
 #region Functions
 function Start-Log {
@@ -148,15 +150,20 @@ Function Set-RegistryKey {
     }
 }
 
-#endregion
+#endregion Functions
 
 #region Main Script
 Start-Log -LogName $LogName
 Write-Log -Message "Windows Update Health Detection Script Starting" -LogLevel 1 -Component "Detection Script Start"
 
 try {
-    $WindowsUpdateRepairedRecently = (Get-ItemPropertyValue -Path HKLM:\Software\$Company\Remediations\WindowsUpdate -Name WindowsUpdateRepaired -ErrorAction SilentlyContinue) -gt (Get-Date).AddDays(-$RepairRerunDays)
-
+    try {
+        $WindowsUpdateRepairedRecently = (Get-ItemPropertyValue -Path HKLM:\Software\$Company\Remediations\WindowsUpdate -Name WindowsUpdateRepaired -ErrorAction SilentlyContinue) -gt (Get-Date).AddDays(-$RepairRerunDays)
+    }
+    catch {
+        $WindowsUpdateRepairedRecently = $false
+    }
+    
     $WUInfo = (New-Object -ComObject Microsoft.Update.AutoUpdate)
     Write-Log -Message "Last WU Search Date: $($WUInfo.Results.LastSearchSuccessDate)" -LogLevel 1 -Component "Detection Script Start"
     Write-Log -Message "Last WU Install Date: $($WUInfo.Results.LastInstallationSuccessDate)" -LogLevel 1 -Component "Detection Script Start"
@@ -176,9 +183,9 @@ try {
 }
 catch {
     Write-Log -Message "An error occured during the PR detection script running" -LogLevel 3 -Component "Error Handling"
-    Write-Log -Message "Unable to determine if repair is needed or not, exiting with 0 to be safe" -LogLevel 3 -Component "Error Handling"
+    Write-Log -Message "Unable to determine if repair is needed or not, exiting with 1 to be safe to force a remediation" -LogLevel 3 -Component "Error Handling"
     Write-Log -Message $error[0].ToString() -LogLevel 3 -Component "Error Handling"
-    Exit 0
+    Exit 1
 }
 
-#endregion
+#endregion Main Script

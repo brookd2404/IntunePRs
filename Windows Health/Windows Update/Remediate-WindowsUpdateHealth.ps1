@@ -1,11 +1,29 @@
+<#
+.SYNOPSIS
+    Attempts to repair the health of Windows Update
+.DESCRIPTION
+    This script walks through various areas such as service state correction, Registry Keys from GPOs, folders that need emptying, optionally run DISM & SFC
+.NOTES
+    Running this script with the $ImageHealthRepair = $true, while fixing most problems, will take an excessive ammount of time and use host resources.
+.LINK
+    https://github.com/brookd2404/IntunePRs
+.EXAMPLE
+    Remediate-WindowsUpdateHealth.ps1
+    Remediate-WindowsUpdateHealth.ps1 -ImageHealthRepair $true
+.NOTES
+    Remember, for Proactive Remediations use:
+        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
+        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+#>
+
 #region Variables
-$VerbosePreference = "Continue"
-
-$Company = 'PowerON'
-$LogName = "PR-WindowsUpdateHealth"
-
-$ImageHealthRepair = $false
-$RespectNoAutoRebootWithLoggedOnUsers = $true #Used to ensure if NoAutoRebootWithLoggedOnUsers exists in registry it is re-instated during repair (HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate)
+#$VerbosePreference = "Continue"
+Param (
+    $Company = 'PowerON',
+    $LogName = "PR-WindowsUpdateHealth",
+    $ImageHealthRepair = $false,
+    $RespectNoAutoRebootWithLoggedOnUsers = $true #Used to ensure if NoAutoRebootWithLoggedOnUsers exists in registry it is re-instated during repair (HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate)
+)
 
 $ServiceState = [PSCustomObject]@{
     Name  = $null
@@ -38,7 +56,7 @@ $ScriptRunOutput = [PSCustomObject]@{
     SFC               = ''
     FoldersCleaned    = @()
 }
-#endregion
+#endregion Variables
 
 #region Functions
 function Start-Log {
@@ -181,14 +199,7 @@ Function Set-RegistryKey {
         Write-Log -Message "Something went wrong writing registry property"
     }
 }
-#endregion
-
-<#
-Main script body starts here.
-Remember, for Proactive Remediations use:
-    "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
-    "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
-#>
+#endregion Functions
 
 #region Main Script
 Start-Log -LogName $LogName
@@ -665,4 +676,4 @@ catch {
     Exit 1
 }
 
-#endregion
+#endregion Main Script
