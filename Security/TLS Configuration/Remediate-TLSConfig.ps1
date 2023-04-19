@@ -279,7 +279,7 @@ try {
     }
     
     Write-Log -Message "Configuring Ciphers" -Component "Config - Protocols and Ciphers"
-    ForEach ($Cipher in $Chipers.PSObject.Properties) {
+    ForEach ($Cipher in $Ciphers.PSObject.Properties) {
         Write-Log -Message "Configuring [$($Cipher.Name)] to [$($Cipher.Value)]" -Component "Config - Protocols and Ciphers"
         Set-Cipher -Name $Cipher.Name -Value $Cipher.Value
     }
