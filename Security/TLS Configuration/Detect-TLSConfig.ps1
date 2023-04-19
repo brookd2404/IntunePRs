@@ -207,7 +207,7 @@ Function Get-RegistryKeyCompliance {
         Write-Log -Message "Checking registry [$Path] property [$Name] is [$Value]"
         $RegValue = Get-ItemPropertyValue -Path $Path -Name $Name -ErrorAction SilentlyContinue
         If ($RegValue -eq $Value) {
-            Write-Log "True: Value set to [$RegValue]"
+            Write-Log -Message "True: Value set to [$RegValue]"
             Return $true
         }
         else {
