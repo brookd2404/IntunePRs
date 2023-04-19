@@ -259,7 +259,7 @@ function Get-Cipher {
 
 #region Main Script
 Start-Log -LogName $LogName
-Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Script Start"
+Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Detection Script Start"
 $CheckResults = @()
 try {
     Write-Log -Message "Checking Protcols" -Component "Config - Protocols and Ciphers"

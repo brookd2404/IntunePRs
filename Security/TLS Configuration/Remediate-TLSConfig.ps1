@@ -269,7 +269,7 @@ function Set-Cipher {
 
 #region Main Script
 Start-Log -LogName $LogName
-Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Script Start"
+Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Component "Remediation Script Start"
 
 try {
     Write-Log -Message "Configuring Protcols" -Component "Config - Protocols and Ciphers"
