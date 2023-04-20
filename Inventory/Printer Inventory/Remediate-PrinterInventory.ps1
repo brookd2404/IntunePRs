@@ -181,7 +181,7 @@ Function Build-Signature ($workspaceID, $primaryKey, $date, $contentLength, $met
     $sha256.Key = $keyBytes
     $calculatedHash = $sha256.ComputeHash($bytesToHash)
     $encodedHash = [Convert]::ToBase64String($calculatedHash)
-    $authorization = 'primaryKey {0}:{1}' -f $workspaceID, $encodedHash
+    $authorization = 'SharedKey {0}:{1}' -f $workspaceID, $encodedHash
     return $authorization
 }
 # Create the function to create and post the request
@@ -192,7 +192,7 @@ Function Post-LogAnalyticsData($workspaceID, $primaryKey, $body, $logType) {
     $rfc1123date = [DateTime]::UtcNow.ToString("r")
     $contentLength = $body.Length
     $signature = Build-Signature `
-        -customerId $workspaceID `
+        -workspaceID $workspaceID `
         -primaryKey $primaryKey `
         -date $rfc1123date `
         -contentLength $contentLength `
@@ -258,7 +258,7 @@ try {
         Write-Log -Message "Uploading Printer Info" -LogLevel 1
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $JSONData = $PrinterInfo | ConvertTo-Json
-        Post-LogAnalyticsData -customerId $customerId -sharedKey $sharedKey -body ([System.Text.Encoding]::UTF8.GetBytes($jsondata)) -logType $logType
+        Post-LogAnalyticsData -workspaceID $workspaceID -primaryKey $primaryKey -body ([System.Text.Encoding]::UTF8.GetBytes($jsondata)) -logType $logType
         
         IF (!(Get-ItemProperty -Path $RegLastSyncLocation  -Name "LastSync" -ErrorAction SilentlyContinue)) {
             IF (!(Test-Path -Path $RegLastSyncLocation  )) {
