@@ -189,18 +189,18 @@ try {
     Select-Object -ExpandProperty Name | % { ($_.ToString().Split('\') | Select-Object -Skip 1) -join '\' }
     Write-Log -Message "Found $($DiscKeys.Count) registry keys to check" -LogLevel 1 -Component "Detection - Registry Scan"
     #Open the local registry
-    Write-Log -Message "Opening registry" -LogLevel 1 -Component "Detection - Registry Scan"
+    Write-Log -Message "Opening registry" -LogLevel 1 -Component "Detection - Registry Action"
     $Registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey('LocalMachine', 'Default')
     ForEach ($RegKey in $DiscKeys) {
         #Open each key with write permissions
         IF (-Not($LogRemediaionKeys)){Write-Log -Message "Opened $RegKey" -LogLevel 1 -Component "Detection - Registry Scan"}
         Try { 
             $ParentKey = $Registry.OpenSubKey($RegKey, $True)
-            IF (-Not($LogRemediaionKeys)){Write-Log -message "Opened $ParentKey" -LogLevel 1 -Component "Detection - Registry Scan"}
+            IF (-Not($LogRemediaionKeys)){Write-Log -message "Opened $ParentKey" -LogLevel 1 -Component "Detection - Registry Action"}
         }
         Catch { 
             Write-Debug "Unable to open $RegKey"
-            Write-Log -Message "Unable to open $RegKey" -LogLevel 3 -Component "Detection - Registry Scan"
+            Write-Log -Message "Unable to open $RegKey" -LogLevel 3 -Component "Detection - Registry Action"
         }
         #Test if registry key has values
         IF (-Not($LogRemediaionKeys)){Write-Log -Message "Checking if $RegKey has values" -LogLevel 1 -Component "Detection - Registry Scan"}
@@ -234,10 +234,10 @@ try {
             }
         }
         $ParentKey.Close()
-        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Closing Parent Key" -LogLevel 1 -Component "Detection - Registry Scan"}
+        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Closing Parent Key" -LogLevel 1 -Component "Detection - Registry Action"}
     }
     $Registry.Close()
-    Write-Log -Message "Closed registry" -LogLevel 1 -Component "Detection - Registry Scan"
+    Write-Log -Message "Closed registry" -LogLevel 1 -Component "Detection - Registry Action"
     IF ($ReturnValue -contains 1) {
         Write-Log -Message "Proactive Remediation is needed" -LogLevel 2 -Component "Detection - Registry Scan"
         Exit 1 
