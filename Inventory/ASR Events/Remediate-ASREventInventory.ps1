@@ -230,6 +230,26 @@ try {
         1122 = Audit Mode Operation
         1129 = User allowed an otherwise blocked operation 
     #>
+    #Hash Table with the Event Types and GUIDS
+    $guidTable = @{
+        "56a863a9-875e-4185-98a7-b882c64b5ce5" =	"AsrVulnerableSignedDriver"
+        "7674ba52-37eb-4a4f-a9a1-f0f9a1619a2c" =	"AsrAdobeReaderChildProcess"
+        "d4f940ab-401b-4efc-aadc-ad5f3c50688a" =	"AsrOfficeChildProcess"
+        "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2" =	"AsrLsassCredentialTheft"
+        "be9ba2d9-53ea-4cdc-84e5-9b1eeee46550" =	"AsrExecutableEmailContent"
+        "01443614-cd74-433a-b99e-2ecdc07bfc25" =	"AsrUntrustedExecutable"
+        "5beb7efe-fd9a-4556-801d-275e5ffc04cc" =	"AsrObfuscatedScript"
+        "d3e037e1-3eb8-44c8-a917-57927947596d" =	"AsrScriptExecutableDownload"
+        "3b576869-a4ec-4529-8536-b80a7769e899" =	"AsrExecutableOfficeContent"
+        "75668c1f-73b5-4cf0-bb93-3ecf5cb7cc84" =	"AsrOfficeProcessInjection"
+        "26190899-1602-49e8-8b27-eb1d0a1ce869" =	"AsrOfficeCommAppChildProcess"
+        "e6db77e5-3df2-4cf1-b95a-636979351e5b" =	"AsrPersistenceThroughWmi"
+        "d1e49aac-8f56-4280-b9ba-993a6d77406c" =	"AsrPsexecWmiChildProcess"
+        "b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4" =	"AsrUntrustedUsbProcess"
+        "92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b" =	"AsrOfficeMacroWin32ApiCalls"
+        "c1db55ab-c21a-4637-bb3f-a12568109d35" =	"AsrRansomware"
+    }
+
     Write-Log -Message "Checking for ASR events in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
     $ASREvents = Get-WinEvent -LogName $EventLogName | Where-Object {
     ($_.ID -match "1121|1122|1129") -and (
@@ -256,7 +276,7 @@ try {
             $tmpObject | Add-Member -MemberType NoteProperty -Name "EventLevel" -Value $ASREvent.LevelDisplayName
             $tmpObject | Add-Member -MemberType NoteProperty -Name "EventLog" -Value $ASREvent.LogName
             $tmpObject | Add-Member -MemberType NoteProperty -Name "MachineName" -Value $ASREvent.MachineName
-        
+            $tmpObject | Add-Member -MemberType NoteProperty -Name "ActionTypeGuid" -Value $ASREvent.Properties.Value[3]
             # Add the event specific data to the PSObject
             switch ($ASREvent.ID) {
                 #If the event is 1121 or 1122, add the event specific data, if 1129, add the event specific data.
@@ -268,9 +288,11 @@ try {
                     switch ($PsItem) {
                         1121 {
                             $tmpObject | Add-Member -MemberType NoteProperty -Name "Action" -Value "Blocked"
+                            $tmpObject | Add-Member -MemberType NoteProperty -Name "ActionType" -Value "$($guidTable[$ASREvent.Properties.Value[3]])Blocked"
                         }
                         1122 {
                             $tmpObject | Add-Member -MemberType NoteProperty -Name "Action" -Value "Audit"
+                            $tmpObject | Add-Member -MemberType NoteProperty -Name "ActionType" -Value "$($guidTable[$ASREvent.Properties.Value[3]])Audited"
                         }
                     }
                 }
@@ -279,6 +301,7 @@ try {
                     $tmpObject | Add-Member -MemberType NoteProperty -Name "ExecutePath" -Value $ASREvent.Properties.Value[5]
                     $tmpObject | Add-Member -MemberType NoteProperty -Name "ProcessName" -Value $ASREvent.Properties.Value[6]
                     $tmpObject | Add-Member -MemberType NoteProperty -Name "Action" -Value "UserAllowed"
+                    $tmpObject | Add-Member -MemberType NoteProperty -Name "ActionType" -Value "$($guidTable[$ASREvent.Properties.Value[3]])UserAllowed"
                 }
             }
             $postObject += $tmpObject
@@ -292,7 +315,8 @@ try {
         catch {
             Write-Log -Message "Failed to upload Printer Info" -LogLevel 3 -Component "Log Analytics Upload"
         }
-    } ELSE {
+    }
+    ELSE {
         Write-Log -Message "No ASR events found in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
     }
 }
