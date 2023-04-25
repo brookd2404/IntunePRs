@@ -249,6 +249,11 @@ try {
         "92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b" =	"AsrOfficeMacroWin32ApiCalls"
         "c1db55ab-c21a-4637-bb3f-a12568109d35" =	"AsrRansomware"
     }
+    if ($DsregCmdStatus -match "DeviceId") {
+        $DeviceId = ($DsregCmdStatus -match "DeviceID")
+        $DeviceId = ($DeviceId.Split(":").trim())
+        $DeviceId = $DeviceId[1]
+    }
 
     Write-Log -Message "Checking for ASR events in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
     $ASREvents = Get-WinEvent -LogName $EventLogName | Where-Object {
@@ -276,6 +281,7 @@ try {
             $tmpObject | Add-Member -MemberType NoteProperty -Name "EventLevel" -Value $ASREvent.LevelDisplayName
             $tmpObject | Add-Member -MemberType NoteProperty -Name "EventLog" -Value $ASREvent.LogName
             $tmpObject | Add-Member -MemberType NoteProperty -Name "MachineName" -Value $ASREvent.MachineName
+            $tmpObject | Add-Member -MemberType NoteProperty -Name "AzureADDeviceID" -Value $DeviceId
             $tmpObject | Add-Member -MemberType NoteProperty -Name "ActionTypeGuid" -Value $ASREvent.Properties.Value[3]
             # Add the event specific data to the PSObject
             switch ($ASREvent.ID) {
