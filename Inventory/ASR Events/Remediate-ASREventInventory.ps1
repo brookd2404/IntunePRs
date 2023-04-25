@@ -19,8 +19,8 @@
 param(
     [Parameter()]
     [string]$LogName = 'PR-ASRInventory',
-    [Parameter(HelpMessage = "The number of days to inventory ASR events. Default is 7.")]
-    [int]$DaysToInventory = 7,
+    [Parameter(HelpMessage = "The number of hours to inventory ASR events. Default is 7.")]
+    [int]$HourstoInventory = 7,
     [Parameter()]
     [string]$EventLogName = "Microsoft-Windows-Windows Defender/Operational",
     [parameter()]
@@ -224,7 +224,7 @@ Write-Log -Message "Proactive Remediation Script Starting" -LogLevel 1 -Componen
 
 try {
     <#
-        Get ASR Events from the last x number of days
+        Get ASR Events from the last x number of hours
         EventID Details
         1121 = Block Mode Operation
         1122 = Audit Mode Operation
@@ -249,22 +249,23 @@ try {
         "92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b" =	"AsrOfficeMacroWin32ApiCalls"
         "c1db55ab-c21a-4637-bb3f-a12568109d35" =	"AsrRansomware"
     }
+    $DsregCmdStatus = dsregcmd /status
     if ($DsregCmdStatus -match "DeviceId") {
         $DeviceId = ($DsregCmdStatus -match "DeviceID")
         $DeviceId = ($DeviceId.Split(":").trim())
         $DeviceId = $DeviceId[1]
     }
 
-    Write-Log -Message "Checking for ASR events in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
+    Write-Log -Message "Checking for ASR events in the last $HourstoInventory hours" -LogLevel 1 -Component "ASR Event Check"
     $ASREvents = Get-WinEvent -LogName $EventLogName | Where-Object {
     ($_.ID -match "1121|1122|1129") -and (
             (
                 New-TimeSpan -Start $_.TimeCreated `
                     -End (Get-Date)
-            ).Days -le $DaysToInventory
+            ).Hours -le $HourstoInventory
         )
     }
-    Write-Log -Message "Found $($ASREvents.Count) ASR events in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
+    Write-Log -Message "Found $($ASREvents.Count) ASR events in the last $HourstoInventory hours" -LogLevel 1 -Component "ASR Event Check"
     Write-Log -Message "Number of Blocked ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1121}).Count" -LogLevel 2 -Component "ASR Event Check"
     Write-Log -Message "Number of Audit ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1122}).Count" -LogLevel 2 -Component "ASR Event Check"
     Write-Log -Message "Number of Allowed ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1129}).Count" -LogLevel 2 -Component "ASR Event Check"
@@ -323,7 +324,7 @@ try {
         }
     }
     ELSE {
-        Write-Log -Message "No ASR events found in the last $DaysToInventory days" -LogLevel 1 -Component "ASR Event Check"
+        Write-Log -Message "No ASR events found in the last $HourstoInventory hours" -LogLevel 1 -Component "ASR Event Check"
     }
 }
 catch {
