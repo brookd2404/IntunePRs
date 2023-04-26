@@ -20,11 +20,9 @@ param(
     [Parameter()]
     [string]$LogName = 'PR-ASRInventory',
     [Parameter(HelpMessage = "The number of hours to inventory ASR events. Default is 7.")]
-    [int]$HourstoInventory = 7,
+    [int]$HourstoInventory = 24,
     [Parameter()]
     [string]$EventLogName = "Microsoft-Windows-Windows Defender/Operational",
-    [parameter()]
-    [string]$RegLastSyncLocation = "HKLM:\Software\ProactiveRemediation\Inventory-Printer",
     [parameter(HelpMessage = "The workspace ID of the Log Analytics Workspace that you want to send the data to.")]
     [string]$workspaceID = "<GUID>",
     [parameter(HelpMessage = "The primary key of the Log Analytics Workspace that you want to send the data to.")]
