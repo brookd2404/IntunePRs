@@ -264,9 +264,9 @@ try {
         )
     }
     Write-Log -Message "Found $($ASREvents.Count) ASR events in the last $HourstoInventory hours" -LogLevel 1 -Component "ASR Event Check"
-    Write-Log -Message "Number of Blocked ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1121}).Count" -LogLevel 2 -Component "ASR Event Check"
-    Write-Log -Message "Number of Audit ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1122}).Count" -LogLevel 2 -Component "ASR Event Check"
-    Write-Log -Message "Number of Allowed ASR Events: $($ASREvents | Where-Object {$_.ID -eq 1129}).Count" -LogLevel 2 -Component "ASR Event Check"
+    Write-Log -Message "Number of Blocked ASR Events: $(($ASREvents | Where-Object {$_.ID -eq 1121}).Count)" -LogLevel 2 -Component "ASR Event Check"
+    Write-Log -Message "Number of Audit ASR Events: $(($ASREvents | Where-Object {$_.ID -eq 1122}).Count)" -LogLevel 2 -Component "ASR Event Check"
+    Write-Log -Message "Number of Allowed ASR Events: $(($ASREvents | Where-Object {$_.ID -eq 1129}).Count)" -LogLevel 2 -Component "ASR Event Check"
     $postObject = @()
     Write-Log -Message "Processing $($ASREvents.Count) ASR events" -LogLevel 1 -Component "ASR Event Processing"
     IF ($ASREvents.Count -gt 0) {
