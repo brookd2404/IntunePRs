@@ -19,7 +19,7 @@
 param(
     [Parameter()]
     [string]$LogName = 'PR-ASRInventory',
-    [Parameter(HelpMessage = "The number of hours to inventory ASR events. Default is 7.")]
+    [Parameter(HelpMessage = "The number of hours to inventory ASR events. Default is 24.")]
     [int]$HourstoInventory = 24,
     [Parameter()]
     [string]$EventLogName = "Microsoft-Windows-Windows Defender/Operational",
