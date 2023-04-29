@@ -5,11 +5,13 @@
     This script walks through various areas such as service state correction, Registry Keys from GPOs, folders that need emptying, optionally run DISM & SFC
 .NOTES
     Running this script with the $ImageHealthRepair = $true, while fixing most problems, will take an excessive ammount of time and use host resources.
+    The $RespectNoAutoRebootWithLoggedOnUsers = $true will make sure this specific Policy setting is re-applied by the script during repairs. Change to $false to ensure all the WU Policies are cleared out. 
 .LINK
     https://github.com/brookd2404/IntunePRs
 .EXAMPLE
     Remediate-WindowsUpdateHealth.ps1
     Remediate-WindowsUpdateHealth.ps1 -ImageHealthRepair $true
+    Remediate-WindowsUpdateHealth.ps1 -RespectNoAutoRebootWithLoggedOnUsers $false
 .NOTES
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully

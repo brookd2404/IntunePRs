@@ -1,3 +1,25 @@
+<#
+.SYNOPSIS
+    Detects if a repair of the Windows Update components is required or not
+.DESCRIPTION
+    This script checks when Windows updates were last scanned for, installed and when the last repair was attempted to decide if remediation is required.
+.NOTES
+    Use the InstalledMonthsGrace and RepairRerunDays to adjust the frequency of running.
+    It is recommended to deploy this to a dynamic AAD group based on the lowest build number acceptible within your environment and keep that maintained and incremented as required.
+.LINK
+    https://github.com/brookd2404/IntunePRs
+.EXAMPLE
+    Detect-WindowsUpdateHealth.ps1
+    Detect-WindowsUpdateHealth.ps1 -InstalledMonthsGrace 3
+    Detect-WindowsUpdateHealth.ps1 -InstalledMonthsGrace 3 -RepairRerunDays 14
+    Detect-WindowsUpdateHealth.ps1 -RepairRerunDays 30
+
+.NOTES
+    Remember, for Proactive Remediations use:
+        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
+        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+#>
+
 #region Variables
 #$VerbosePreference = "Continue"
 Param (
@@ -5,8 +27,10 @@ Param (
     [string]$Company = 'PowerON',
     [Parameter(Mandatory = $false)]
     [string]$LogName = 'PR-WindowsUpdateHealth',
-    $InstalledMonthsGrace = 3,
-    $RepairRerunDays = 14
+    [Parameter(Mandatory = $false)]
+    [Int]$InstalledMonthsGrace = 3,
+    [Parameter(Mandatory = $false)]
+    [Int]$RepairRerunDays = 14
 )
 #endregion Variables
 
