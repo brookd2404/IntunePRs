@@ -1,9 +1,26 @@
+<#
+.SYNOPSIS
+    Detects if the Windows 11 built-in Teams (personal) app is present
+.DESCRIPTION
+    This script detect the presence of the built-in Microsoft Teams (for personal use) app that comes with Windows 11 and mark the device for remediation.
+.NOTES
+
+.LINK
+    https://github.com/brookd2404/IntunePRs
+.EXAMPLE
+    Detect-TeamsPersonalApp.ps1
+    
+.NOTES
+    Remember, for Proactive Remediations use:
+        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
+        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+#>
+
 #region Variables
-$VerbosePreference = "Continue"
-
-$LogName = 'PR-TeamsPersonalApp'
-
-#endregion
+Param (
+    $LogName = 'PR-TeamsPersonalApp'    
+)
+#endregion Variables
 
 #region Functions
 function Start-Log {
@@ -107,7 +124,7 @@ function Write-Log {
     }
 }
 
-#endregion
+#endregion Functions
 
 #region Main Script
 Start-Log -LogName $LogName
@@ -134,4 +151,4 @@ catch {
 
 }
 
-#endregion
+#endregion Main Script
