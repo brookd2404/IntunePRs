@@ -1,10 +1,10 @@
 <# 
 .SYNOPSIS
-    Configures TLS, SSL, WinHTTP, Cipher Suites etc to recommended hardening configuration
+    Compares the current TLS, SSL, WinHTTP, Cipher Suites etc configuration to recommended hardening configuration
 .DESCRIPTION
-    This script configures the recommended settings for Protocols and Ciphers to disable legacy and insecure settings across the OS and .NET
+    This script compares the current configuration against the recommended settings for Protocols and Ciphers to disable legacy and insecure settings across the OS and .NET
 .NOTES
-    Designed for use as a remediation script in Intune but can be used standalone.
+    Designed for use as a detection script in Intune but can be used standalone to determine current configuration and compliance to your set requirements.
 .LINK
     Reference Links:    
     Enable TLS 1.2 Client - https://learn.microsoft.com/en-us/mem/configmgr/core/plan-design/security/enable-tls-1-2-client
@@ -15,7 +15,7 @@
     0x00000800 = Enable TLS 1.2 by default
     Cipher Order - https://auspisec.com/blog/20220618/windows_best_practices_tls.html
 .EXAMPLE
-    Remediate-TLSConfig.ps1 -Verbose
+    Detect-TLSConfig.ps1 -Verbose
 .NOTES
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
