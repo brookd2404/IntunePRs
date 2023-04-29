@@ -3,8 +3,6 @@
     Compares the current TLS, SSL, WinHTTP, Cipher Suites etc configuration to recommended hardening configuration
 .DESCRIPTION
     This script compares the current configuration against the recommended settings for Protocols and Ciphers to disable legacy and insecure settings across the OS and .NET
-.NOTES
-    Designed for use as a detection script in Intune but can be used standalone to determine current configuration and compliance to your set requirements.
 .LINK
     Reference Links:    
     Enable TLS 1.2 Client - https://learn.microsoft.com/en-us/mem/configmgr/core/plan-design/security/enable-tls-1-2-client
@@ -17,6 +15,8 @@
 .EXAMPLE
     Detect-TLSConfig.ps1 -Verbose
 .NOTES
+    Designed for use as a detection script in Intune but can be used standalone to determine current configuration and compliance to your set requirements.
+
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
         - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed

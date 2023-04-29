@@ -4,13 +4,10 @@
 .DESCRIPTION
     This script detects the presence of a recent Event ID (845) and if not present will look for a Recovery Key, generate one if not present and then attempt to force an upload to Azure AD.
     Once an event ID of 845 is seen, a registry key is written to mark the device as compliant.
-.NOTES
-
 .LINK
     https://github.com/brookd2404/IntunePRs
 .EXAMPLE
     Remediate-UploadBitLockerKeyAAD.ps1
-    
 .NOTES
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully

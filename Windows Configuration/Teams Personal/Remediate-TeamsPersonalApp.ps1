@@ -4,16 +4,16 @@
 .DESCRIPTION
     This script will remove the built-in Microsoft Teams (for personal use) app that comes with Windows 11.
     It will also add registry keys to prevent the re-installation and remove the Chat icon from the Taskbar. 
-.NOTES
-    The key that controls re-installation of the Teams app is protected with only Trusted Installer having write access.
-    This script will temporarily grant ownership of the key to SYSTEM and then grant full permissions to SYSTEM so it can be changed.
-    Once the change is complete, the permission changes are reverted.
 .LINK
     https://github.com/brookd2404/IntunePRs
 .EXAMPLE
     Remediate-TeamsPersonalApp.ps1
     
 .NOTES
+    The key that controls re-installation of the Teams app is protected with only Trusted Installer having write access.
+    This script will temporarily grant ownership of the key to SYSTEM and then grant full permissions to SYSTEM so it can be changed.
+    Once the change is complete, the permission changes are reverted.
+
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
         - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 

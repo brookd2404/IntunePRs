@@ -3,13 +3,10 @@
     Detects if the registry key from a successful remediation script for BitLocker Key Upload is present or not
 .DESCRIPTION
     This script detect the presence of a specific registry key and if present marks the device as remediation NOT being required.
-.NOTES
-
 .LINK
     https://github.com/brookd2404/IntunePRs
 .EXAMPLE
     Detect-UploadBitLockerKeyAAD.ps1
-    
 .NOTES
     Remember, for Proactive Remediations use:
         - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
