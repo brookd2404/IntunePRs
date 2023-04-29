@@ -36,9 +36,9 @@ param(
 function Start-Log {
     <#
     .SYNOPSIS
-        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr.
+        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr or Autopatch.
     .DESCRIPTION
-        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr.
+        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr or Autopatch.
     .PARAMETER LogName
         The name of the log file to be created. If not specified, the name of the script will be used.
     .PARAMETER LogFolder
@@ -47,13 +47,13 @@ function Start-Log {
         The maximum size in Mb of the log file before it is restarted. If not specified, the default of 10Mb will be used.
     .EXAMPLE
         Start-Log
-        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr.
+        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr or Autopatch.
     .EXAMPLE
         Start-Log -LogName "MyLog"
-        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr with the name MyLog.log.
+        Creates a log file in the CCM\Logs folder or in the ProgramData\Intune\Logs folder if the device is not managed by ConfigMgr or Autopatch with the name MyLog.log.
     .EXAMPLE
         Start-Log -LogName "MyLog" -LogFolder "MyFolder"
-        Creates a log file in the CCM\Logs folder or in the ProgramData\MyFolder\Logs folder if the device is not managed by ConfigMgr with the name MyLog.log.
+        Creates a log file in the CCM\Logs folder or in the ProgramData\MyFolder\Logs folder if the device is not managed by ConfigMgr or Autopatch with the name MyLog.log.
     #>
     Param (
         [Parameter(Mandatory = $false)]
@@ -115,12 +115,17 @@ function Write-Log {
         The message to be written to the log file.
     .PARAMETER LogLevel
         The level of the message to be written to the log file. Valid values are 1, 2, 3, Information, Warning, Error. Default is 1.
+    .PARAMETER Component
+        The component helps identify in the logs which component you are looking at.
     .EXAMPLE
         Write-Log -Message "This is a test message"
         Writes a message to the log file.
     .EXAMPLE
         Write-Log -Message "This is a test message" -LogLevel 2
-        Writes a message to the log file with a log level of 2.
+        Writes a message to the log file with a log level of 2 (Warning).
+    .EXAMPLE
+        Write-Log -Message "This is a test message" -LogLevel 2 -Component "Testing"
+        Writes a message to the log file with a log level of 2 (Warning) marked as component Testing.
     #>
     Param (
         [Parameter(Mandatory = $false)]
