@@ -1,0 +1,1 @@
+Remove-Item -Path "HKLM:\Software\Policies\Adobe" -Recurse -Force

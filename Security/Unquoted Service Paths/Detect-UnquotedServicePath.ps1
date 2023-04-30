@@ -193,32 +193,32 @@ try {
     $Registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey('LocalMachine', 'Default')
     ForEach ($RegKey in $DiscKeys) {
         #Open each key with write permissions
-        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Opened $RegKey" -LogLevel 1 -Component "Detection - Registry Scan"}
+        IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Opened $RegKey" -LogLevel 1 -Component "Detection - Registry Scan" }
         Try { 
             $ParentKey = $Registry.OpenSubKey($RegKey, $True)
-            IF (-Not($LogRemediaionKeys)){Write-Log -message "Opened $ParentKey" -LogLevel 1 -Component "Detection - Registry Action"}
+            IF (-Not($LogRemediaionKeys)) { Write-Log -message "Opened $ParentKey" -LogLevel 1 -Component "Detection - Registry Action" }
         }
         Catch { 
             Write-Debug "Unable to open $RegKey"
             Write-Log -Message "Unable to open $RegKey" -LogLevel 3 -Component "Detection - Registry Action"
         }
         #Test if registry key has values
-        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Checking if $RegKey has values" -LogLevel 1 -Component "Detection - Registry Scan"}
+        IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Checking if $RegKey has values" -LogLevel 1 -Component "Detection - Registry Scan" }
         If ($ParentKey.ValueCount -gt 0) {
-            IF (-Not($LogRemediaionKeys)){Write-Log -Message "$RegKey has $($ParentKey.ValueCount) values" -LogLevel 1 -Component "Detection - Registry Scan"}
+            IF (-Not($LogRemediaionKeys)) { Write-Log -Message "$RegKey has $($ParentKey.ValueCount) values" -LogLevel 1 -Component "Detection - Registry Scan" }
             #Get all values that match the RegEx
             $MatchedValues = $ParentKey.GetValueNames() | ? { $_ -eq "ImagePath" -or $_ -eq "UninstallString" }
-            IF (-Not($LogRemediaionKeys)){Write-Log -Message "Found $($MatchedValues.Count) values to check" -LogLevel 1 -Component "Detection - Registry Scan"}
+            IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Found $($MatchedValues.Count) values to check" -LogLevel 1 -Component "Detection - Registry Scan" }
             ForEach ($Match in $MatchedValues) {
                 $Value = $ParentKey.GetValue($Match)
-                IF (-Not($LogRemediaionKeys)){Write-Log -Message "Value Matched: $Value" -LogLevel 1 -Component "Detection - Registry Scan"}
+                IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Value Matched: $Value" -LogLevel 1 -Component "Detection - Registry Scan" }
                 #Test if value matches RegEx
                 If ($Value -match $ValueRegEx) {
-                IF (-Not($LogRemediaionKeys)){Write-Log -Message "Value $Value in $RegKey matches RegEx" -LogLevel 1 -Component "Detection - Registry Scan"}
+                    IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Value $Value in $RegKey matches RegEx" -LogLevel 1 -Component "Detection - Registry Scan" }
                     $RegType = $ParentKey.GetValueKind($Match)
-                    IF (-Not($LogRemediaionKeys)){Write-Log -Message "Value $Value is of type $RegType" -LogLevel 1 -Component "Detection - Registry Scan"}
+                    IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Value $Value is of type $RegType" -LogLevel 1 -Component "Detection - Registry Scan" }
                     If ($RegType -eq "ExpandString") {
-                        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Value $Value is of type ExpandString, Doing extra work to expand." -LogLevel 1 -Component "Detection - Registry Scan"}
+                        IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Value $Value is of type ExpandString, Doing extra work to expand." -LogLevel 1 -Component "Detection - Registry Scan" }
                         #Get the value without expanding the environmental names
                         $Value = $ParentKey.GetValue($Match, $Null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
                         $Value -match $ValueRegEx
@@ -226,15 +226,16 @@ try {
                     #Uses the matches from the RegEx to build a new entry encapsulating the exe path with double quotes
                     $Correction = "$([char]34)$($Matches[1])$([char]34)$($Matches[2])"
                     IF (-Not([String]::IsNullOrEmpty($Correction))) {
-                        $Correction
+                        #$Correction
                         $ReturnValue += 1
+                        "Correction needed for $Value in $ParentKey"
                         Write-Log -Message "Correction needed for $Value in $ParentKey" -LogLevel 2 -Component "Detection - Registry Scan"
                     }
                 }
             }
         }
         $ParentKey.Close()
-        IF (-Not($LogRemediaionKeys)){Write-Log -Message "Closing Parent Key" -LogLevel 1 -Component "Detection - Registry Action"}
+        IF (-Not($LogRemediaionKeys)) { Write-Log -Message "Closing Parent Key" -LogLevel 1 -Component "Detection - Registry Action" }
     }
     $Registry.Close()
     Write-Log -Message "Closed registry" -LogLevel 1 -Component "Detection - Registry Action"
@@ -244,7 +245,7 @@ try {
     }
     ELSE {
         Write-Log -Message "Proactive Remediation is not needed" -LogLevel 1 -Component "Detection - Registry Scan"
-    Exit 0 
+        Exit 0 
     }
 }
 catch {

@@ -230,6 +230,7 @@ try {
                             Write-Log -Message "Writing $Correction to $ParentKey" -LogLevel 1 -Component "Remediation - Registry Configuration"
                             $ParentKey.SetValue("$Match", "$Correction", [Microsoft.Win32.RegistryValueKind]::$RegType)
                             Write-Log -Message "Successfully wrote $Correction to $ParentKey" -LogLevel 1 -Component "Remediation - Registry Configuration"
+                            "Successfully wrote $Correction to $ParentKey"
                         }
                         Catch {
                             Write-Log -Message "Failed to write $Correction to $ParentKey" -LogLevel 3 -Component "Remediation - Registry Configuration"
