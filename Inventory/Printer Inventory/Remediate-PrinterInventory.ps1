@@ -15,8 +15,6 @@
 param(
     [Parameter()]
     [string]$LogName = "PR-PrinterInventory",
-    [Parameter()]
-    [string]$LogFolder = "",
     [parameter()]
     [string]$RegLastSyncLocation = "HKLM:\Software\ProactiveRemediation\Inventory-Printer",
     [parameter()]
