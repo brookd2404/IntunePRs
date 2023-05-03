@@ -9,8 +9,8 @@
     https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2905591/nsa-recommends-adobe-acrobat-reader-security-configurations/
 .NOTES
     Remember, for Proactive Remediations use:
-        - "Write-Output 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
-        - "Write-Output 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+        - "Write-Output 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remediation script that it was remediated successfully
+        - "Write-Output 1" - To signify in a detection script that a remediation is needed and likewise in a remediation script that the remediation failed 
 #>
 
 

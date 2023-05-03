@@ -7,8 +7,8 @@
     https://github.com/brookd2404/IntunePRs/tree/main/Inventory/Printer%20Inventory/Detect-PrinterInventory.ps1
 .NOTES
     Remember, for Proactive Remediations use:
-        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
-        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remediation script that it was remediated successfully
+        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remediation script that the remediation failed 
 #>
 
 #As we cannot pass Params to PR's use this first section to define the "Parameters" for the script.

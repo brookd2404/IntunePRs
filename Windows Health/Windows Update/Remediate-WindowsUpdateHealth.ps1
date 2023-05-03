@@ -14,8 +14,8 @@
     The $RespectNoAutoRebootWithLoggedOnUsers = $true will make sure this specific Policy setting is re-applied by the script during repairs. Change to $false to ensure all the WU Policies are cleared out. 
 
     Remember, for Proactive Remediations use:
-        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remeditation script that it was remediated succesfully
-        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remeditation script that the remediation failed 
+        - "Exit 0" - To signify in a detection script that a remediation is NOT needed and likewise in a remediation script that it was remediated successfully
+        - "Exit 1" - To signify in a detection script that a remediation is needed and likewise in a remediation script that the remediation failed 
 #>
 
 #region Variables
